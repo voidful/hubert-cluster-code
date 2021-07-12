@@ -57,6 +57,14 @@ apply_kmeans = ApplyKmeans('./km_feat_100_layer_20')
 apply_kmeans(hidden_states[20].squeeze().cuda())
 ```
 
+or using asrp   
+```python
+import asrp
+
+hc = asrp.HubertCode("facebook/hubert-large-ll60k", './km_feat_100_layer_20', 20)
+hc('voice file path')
+```
+
 ## Calculate kmeans cluster
 ```shell
 export FAIRSEQ_ROOT=~/fairseq/
