@@ -2,6 +2,8 @@
 Reference https://github.com/pytorch/fairseq/tree/master/examples/hubert/simple_kmeans   
 
 ## Usage: Extract hubert code from clustering result
+`wget https://raw.githubusercontent.com/voidful/hubert-cluster-code/main/km_feat_100_layer_20`
+
 ```python
 from transformers import Wav2Vec2FeatureExtractor, HubertModel
 from datasets import load_dataset
@@ -57,7 +59,7 @@ apply_kmeans = ApplyKmeans('./km_feat_100_layer_20')
 apply_kmeans(hidden_states[20].squeeze().cuda())
 ```
 
-or using asrp   
+or using asrp
 ```python
 import asrp
 
