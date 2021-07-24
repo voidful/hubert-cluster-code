@@ -2,7 +2,7 @@
 Reference https://github.com/pytorch/fairseq/tree/master/examples/hubert/simple_kmeans   
 
 ## Usage: Extract hubert code from clustering result
-`wget https://raw.githubusercontent.com/voidful/hubert-cluster-code/main/km_feat_100_layer_20`
+`wget https://raw.githubusercontent.com/voidful/hubert-cluster-code/main/km_feat_100/km_feat_100_layer_20`
 
 ```python
 from transformers import Wav2Vec2FeatureExtractor, HubertModel
