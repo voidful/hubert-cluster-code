@@ -28,11 +28,11 @@ import joblib
 import torch
 
 class ApplyKmeans(object):
-    def __init__(self, km_path):
+    def __init__(self, km_path, return_diff=False):
         self.km_model = joblib.load(km_path)
         self.C_np = self.km_model.cluster_centers_.transpose()
         self.Cnorm_np = (self.C_np ** 2).sum(0, keepdims=True)
-
+        self.return_diff = return_diff
         self.C = torch.from_numpy(self.C_np)
         self.Cnorm = torch.from_numpy(self.Cnorm_np)
         if torch.cuda.is_available():
@@ -41,29 +41,36 @@ class ApplyKmeans(object):
 
     def __call__(self, x):
         if isinstance(x, torch.Tensor):
-            dist = (
+            dist = torch.sqrt(
                 x.pow(2).sum(1, keepdim=True)
                 - 2 * torch.matmul(x, self.C)
                 + self.Cnorm
             )
-            return dist.argmin(dim=1).cpu().numpy()
+            min_dist = dist.detach().min(dim=1)
+            if self.return_diff:
+                return min_dist.indices.cpu().numpy(), min_dist.values.cpu().numpy()
+            else:
+                return min_dist.indices.cpu().numpy()
         else:
-            dist = (
+            dist = np.sqrt(
                 (x ** 2).sum(1, keepdims=True)
                 - 2 * np.matmul(x, self.C_np)
                 + self.Cnorm_np
             )
-            return np.argmin(dist, axis=1)
-
-apply_kmeans = ApplyKmeans('./km_feat_100_layer_20')
-apply_kmeans(hidden_states[20].squeeze().cuda())
+            if self.return_diff:
+                return np.argmin(dist, axis=1), np.min(dist, axis=1)
+            else:
+                return np.argmin(dist, axis=1)
+            
+apply_kmeans = ApplyKmeans('./km_100h_c500/km_feat_layer_22')
+apply_kmeans(hidden_states[22].squeeze().cuda())
 ```
 
 or using asrp
 ```python
 import asrp
 
-hc = asrp.HubertCode("facebook/hubert-large-ll60k", './km_feat_100_layer_20', 20)
+hc = asrp.HubertCode("facebook/hubert-large-ll60k", './km_100h_c500/km_feat_layer_22', 22)
 hc('voice file path')
 ```
 
